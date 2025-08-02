@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { DockerImage } from "@/types";
 import { addCoreImage, addGitlabImage } from "@/services/api";
+import { useLoader } from "./LoaderContext";
 
 type SortDirection = "asc" | "desc";
 
@@ -12,28 +13,60 @@ interface Props {
 	onRefresh: () => void;
 }
 
+const ArrowIcon = ({ direction }: { direction: "asc" | "desc" }) => (
+	<svg
+		width="8"
+		height="8"
+		viewBox="0 0 12 12"
+		fill="none"
+		xmlns="http://www.w3.org/2000/svg"
+		style={{
+			display: "inline",
+			transform: direction === "asc" ? "rotate(0deg)" : "rotate(180deg)",
+		}}
+	>
+		<path d="M6 3L10 9H2L6 3Z" fill="#222" />
+	</svg>
+);
+
 const ImagesManager: React.FC<Props> = ({ storages, images, onRefresh }) => {
 	const [coreImageLink, setCoreImageLink] = useState("");
 	const [gitlabImageLink, setGitlabImageLink] = useState("");
-	const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+	const [sortColumn, setSortColumn] = useState<string>("created");
+	const { loading, setLoading } = useLoader();
 
 	const sortedImages = useMemo(() => {
 		return [...images].sort((a, b) => {
-			if (a.tag < b.tag) return sortDirection === "asc" ? -1 : 1;
-			if (a.tag > b.tag) return sortDirection === "asc" ? 1 : -1;
+			let aValue = a[sortColumn as keyof DockerImage];
+			let bValue = b[sortColumn as keyof DockerImage];
+			if (
+				sortColumn === "created" ||
+				sortColumn === "size" ||
+				sortColumn === "containers"
+			) {
+				aValue = Number(aValue);
+				bValue = Number(bValue);
+			}
+			if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+			if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
 			return 0;
 		});
-	}, [images, sortDirection]);
+	}, [images, sortDirection, sortColumn]);
 
-	const handleSortByTag = () => {
-		setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+	const handleSort = (column: string) => {
+		if (sortColumn === column) {
+			setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+		} else {
+			setSortColumn(column);
+			setSortDirection("asc");
+		}
 	};
 
 	const handleSubmitCoreImage = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!coreImageLink) return;
-		setIsSubmitting(true);
+		setLoading(true);
 		try {
 			await addCoreImage(coreImageLink);
 			alert("Core image added successfully!");
@@ -43,14 +76,14 @@ const ImagesManager: React.FC<Props> = ({ storages, images, onRefresh }) => {
 			console.error(error);
 			alert("Failed to add core image.");
 		} finally {
-			setIsSubmitting(false);
+			setLoading(false);
 		}
 	};
 
 	const handleSubmitGitlabImage = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!gitlabImageLink) return;
-		setIsSubmitting(true);
+		setLoading(true);
 		try {
 			await addGitlabImage(gitlabImageLink);
 			alert("Epica image added successfully!");
@@ -60,7 +93,7 @@ const ImagesManager: React.FC<Props> = ({ storages, images, onRefresh }) => {
 			console.error(error);
 			alert("Failed to add Epica image.");
 		} finally {
-			setIsSubmitting(false);
+			setLoading(false);
 		}
 	};
 
@@ -82,84 +115,103 @@ const ImagesManager: React.FC<Props> = ({ storages, images, onRefresh }) => {
 				<table className="min-w-full bg-white border border-gray-200">
 					<thead>
 						<tr className="bg-gray-100">
-							<th className="py-2 px-2 border-b w-32">ID</th>
-							<th className="py-2 px-4 border-b">Repository</th>
 							<th
-								className="py-2 px-4 border-b cursor-pointer"
-								onClick={handleSortByTag}
+								className="py-2 px-2 border-b w-32 text-left cursor-pointer select-none"
+								onClick={() => handleSort("id")}
+							>
+								ID
+								{sortColumn === "id" && (
+									<span className="inline-block align-middle ml-1">
+										<ArrowIcon direction={sortDirection} />
+									</span>
+								)}
+							</th>
+							<th
+								className="py-2 px-2 border-b text-left cursor-pointer select-none"
+								onClick={() => handleSort("repository")}
+							>
+								Repository
+								{sortColumn === "repository" && (
+									<span className="inline-block align-middle ml-1">
+										<ArrowIcon direction={sortDirection} />
+									</span>
+								)}
+							</th>
+							<th
+								className="py-2 px-2 border-b cursor-pointer text-left select-none"
+								onClick={() => handleSort("tag")}
 							>
 								Tag
-								<span className="inline-block align-middle ml-1">
-									{sortDirection === "asc" ? (
-										<svg
-											width="12"
-											height="12"
-											viewBox="0 0 20 20"
-											fill="none"
-											xmlns="http://www.w3.org/2000/svg"
-											style={{ display: "inline" }}
-										>
-											<path
-												d="M6 12L10 8L14 12"
-												stroke="#222"
-												strokeWidth="2"
-												strokeLinecap="round"
-												strokeLinejoin="round"
-											/>
-										</svg>
-									) : (
-										<svg
-											width="12"
-											height="12"
-											viewBox="0 0 20 20"
-											fill="none"
-											xmlns="http://www.w3.org/2000/svg"
-											style={{ display: "inline" }}
-										>
-											<path
-												d="M6 8L10 12L14 8"
-												stroke="#222"
-												strokeWidth="2"
-												strokeLinecap="round"
-												strokeLinejoin="round"
-											/>
-										</svg>
-									)}
-								</span>
+								{sortColumn === "tag" && (
+									<span className="inline-block align-middle ml-1">
+										<ArrowIcon direction={sortDirection} />
+									</span>
+								)}
 							</th>
-							<th className="py-2 px-4 border-b">Size (MB)</th>
-							<th className="py-2 px-6 border-b w-56">Created</th>
-							<th className="py-2 px-4 border-b">Containers</th>
+							<th
+								className="py-2 px-2 border-b text-left cursor-pointer select-none"
+								onClick={() => handleSort("size")}
+							>
+								Size (MB)
+								{sortColumn === "size" && (
+									<span className="inline-block align-middle ml-1">
+										<ArrowIcon direction={sortDirection} />
+									</span>
+								)}
+							</th>
+							<th
+								className="py-2 px-2 border-b w-56 text-left cursor-pointer select-none"
+								onClick={() => handleSort("created")}
+							>
+								Created
+								{sortColumn === "created" && (
+									<span className="inline-block align-middle ml-1">
+										<ArrowIcon direction={sortDirection} />
+									</span>
+								)}
+							</th>
+							<th
+								className="py-2 px-2 border-b text-left cursor-pointer select-none"
+								onClick={() => handleSort("containers")}
+							>
+								Containers
+								{sortColumn === "containers" && (
+									<span className="inline-block align-middle ml-1">
+										<ArrowIcon direction={sortDirection} />
+									</span>
+								)}
+							</th>
 						</tr>
 					</thead>
 					<tbody>
 						{sortedImages.map((img) => (
 							<tr key={img.id} className="hover:bg-gray-100 text-sm">
-								<td className="py-2 px-2 border-b font-mono truncate max-w-[7rem] relative group">
-									<span
-										title={img.id}
-										style={{ userSelect: "all", cursor: "pointer" }}
-									>
+								<td
+									className="py-2 px-2 border-b font-mono truncate max-w-[7rem] relative group cursor-pointer hover:bg-blue-50"
+									title="Click to copy ID"
+									onClick={() => navigator.clipboard.writeText(img.id)}
+								>
+									<span title={img.id} style={{ userSelect: "all" }}>
 										{img.id}
 									</span>
 								</td>
-								<td className="py-2 px-4 border-b">{img.repository}</td>
-								<td className="py-2 px-4 border-b">{img.tag}</td>
-								<td className="py-2 px-4 border-b">
+								<td className="py-2 px-2 border-b">{img.repository}</td>
+								<td className="py-2 px-2 border-b">{img.tag}</td>
+								<td className="py-2 px-2 border-b">
 									{(img.size / 1024 / 1024).toFixed(1)}
 								</td>
-<td className="py-2 px-6 border-b w-56">
-	{(() => {
-		const d = new Date(img.created * 1000);
-		const day = String(d.getDate()).padStart(2, '0');
-		const month = String(d.getMonth() + 1).padStart(2, '0');
-		const year = d.getFullYear();
-		const hours = String(d.getHours()).padStart(2, '0');
-		const minutes = String(d.getMinutes()).padStart(2, '0');
-		return `${day}/${month}/${year}, ${hours}:${minutes}`;
-	})()}
-</td>
-								<td className="py-2 px-4 border-b">{img.containers}</td>
+								<td className="py-2 px-2 border-b">
+									{(() => {
+										const d = new Date(img.created * 1000);
+										const day = String(d.getDate()).padStart(2, "0");
+										const month = String(d.getMonth() + 1).padStart(2, "0");
+										const year = d.getFullYear();
+										const hours = String(d.getHours()).padStart(2, "0");
+										const minutes = String(d.getMinutes()).padStart(2, "0");
+										return `${day}/${month}/${year}, ${hours}:${minutes}`;
+									})()}
+								</td>
+								<td className="py-2 px-2 border-b">{img.containers}</td>
 							</tr>
 						))}
 					</tbody>
@@ -170,7 +222,16 @@ const ImagesManager: React.FC<Props> = ({ storages, images, onRefresh }) => {
 			<div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
 				<form onSubmit={handleSubmitCoreImage} className="space-y-3">
 					<label htmlFor="core-image" className="block text-md font-medium">
-						Add Core Image (TeamCity link)
+						Add Core Image (
+						<a
+							href="https://build-win-vm1.epicflow.hysdev.com/project/EpicFlow?mode=builds"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-blue-500 underline hover:text-blue-700"
+						>
+							TeamCity
+						</a>
+						)
 					</label>
 					<input
 						id="core-image"
@@ -179,12 +240,12 @@ const ImagesManager: React.FC<Props> = ({ storages, images, onRefresh }) => {
 						onChange={(e) => setCoreImageLink(e.target.value)}
 						placeholder="Enter TeamCity image URL"
 						className="w-full p-2 border border-gray-300 rounded"
-						disabled={isSubmitting}
+						disabled={loading}
 					/>
 					<button
 						type="submit"
 						className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
-						disabled={isSubmitting || !coreImageLink}
+						disabled={loading || !coreImageLink}
 					>
 						Add
 					</button>
@@ -192,7 +253,16 @@ const ImagesManager: React.FC<Props> = ({ storages, images, onRefresh }) => {
 
 				<form onSubmit={handleSubmitGitlabImage} className="space-y-3">
 					<label htmlFor="gitlab-image" className="block text-md font-medium">
-						Add Epica image (GitLab link)
+						Add Epica image (
+						<a
+							href="https://gitlab.hysdev.com/epicflownextgen/virtualassistance/container_registry/128"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-blue-500 underline hover:text-blue-700"
+						>
+							GitLab
+						</a>
+						)
 					</label>
 					<input
 						id="gitlab-image"
@@ -201,12 +271,12 @@ const ImagesManager: React.FC<Props> = ({ storages, images, onRefresh }) => {
 						onChange={(e) => setGitlabImageLink(e.target.value)}
 						placeholder="Enter GitLab image URL"
 						className="w-full p-2 border border-gray-300 rounded"
-						disabled={isSubmitting}
+						disabled={loading}
 					/>
 					<button
 						type="submit"
 						className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
-						disabled={isSubmitting || !gitlabImageLink}
+						disabled={loading || !gitlabImageLink}
 					>
 						Add
 					</button>

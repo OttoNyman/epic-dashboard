@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useLoader } from "@/components/LoaderContext";
+import Loader from "@/components/Loader";
 import ImagesManager from "@/components/ImagesManager";
 import EnvironmentsManager from "@/components/EnvironmentsManager";
 import { DockerImage, RunningPod } from "@/types";
@@ -12,13 +14,13 @@ export default function Home() {
 	const [images, setImages] = useState<DockerImage[]>([]);
 	const [runningInstances, setRunningInstances] = useState<RunningPod[]>([]);
 
-	// State for loading and errors
-	const [isLoading, setIsLoading] = useState(true);
+	// State for errors
 	const [error, setError] = useState<string | null>(null);
+	const { loading, setLoading } = useLoader();
 
 	// Data fetching function
 	const fetchData = useCallback(async () => {
-		setIsLoading(true);
+		setLoading(true);
 		setError(null);
 		try {
 			const [storagesAndImagesData, runningInstancesData] = await Promise.all([
@@ -34,9 +36,9 @@ export default function Home() {
 			);
 			console.error(err);
 		} finally {
-			setIsLoading(false);
+			setLoading(false);
 		}
-	}, []);
+	}, [setLoading]);
 
 	// Fetch data on initial component mount
 	useEffect(() => {
@@ -44,12 +46,8 @@ export default function Home() {
 	}, [fetchData]);
 
 	// Main render logic
-	if (isLoading) {
-		return (
-			<div className="flex justify-center items-center h-screen">
-				<p className="text-xl">Loading dashboard data...</p>
-			</div>
-		);
+	if (loading) {
+		return <Loader />;
 	}
 
 	if (error) {
@@ -67,10 +65,8 @@ export default function Home() {
 	}
 
 	return (
-		<div className="space-y-8">
-			<h1 className="text-4xl font-bold text-center">
-				Environments Dashboard
-			</h1>
+		<div className="space-y-8 min-h-screen flex flex-col">
+			<h1 className="text-4xl font-bold text-center">Environments Dashboard</h1>
 			<EnvironmentsManager
 				runningInstances={runningInstances}
 				images={images}
@@ -82,6 +78,9 @@ export default function Home() {
 				images={images}
 				onRefresh={fetchData}
 			/>
+			<footer className="mt-auto py-4 text-xs text-gray-400 text-center border-t border-gray-100">
+				BE: S. Tokarev &nbsp;|&nbsp; UI: A. Krasnoiarskyi
+			</footer>
 		</div>
 	);
 }

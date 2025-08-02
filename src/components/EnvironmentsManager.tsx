@@ -7,6 +7,7 @@ import {
 	addImageToPod,
 	deleteInstance,
 } from "@/services/api";
+import { useLoader } from "./LoaderContext";
 
 interface Props {
 	runningInstances: RunningPod[];
@@ -27,11 +28,11 @@ const DEFAULT_ENV_VARS = JSON.stringify(
 		SUPERUSER_LOGIN: "PO",
 		SUPERUSER_PASSWORD: "Epica23!",
 		LLM_TYPE: "OPENAI",
-		OPENAI_API_KEY: "TYPE HERE!!!",
+		OPENAI_API_KEY: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 		OPENAI_API_MODEL: "gpt-4o",
 		OPENAI_API_VERSION: "2024-02-15-preview",
 		IS_SQL_FUNC_ENABLE: "1",
-		LOG_LEVEL: "ERROR",
+		LOG_LEVEL: "DEBUG",
 		PROJECT_DATA_REPORT_COL_DIFFERENCE_SHORTAGE_DAME_NAME:
 			"DueDateDifferenceShortageCalendarDays",
 	},
@@ -45,11 +46,8 @@ const EnvironmentsManager: React.FC<Props> = ({
 	storages,
 	onRefresh,
 }) => {
-	console.log(">> ~ runningInstances:", runningInstances);
-	console.log(">> ~ storages:", storages);
-	console.log(">> ~ images:", images);
 
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const { loading, setLoading } = useLoader();
 
 	// State for "Start New" form
 	const [startTag, setStartTag] = useState("");
@@ -69,11 +67,11 @@ const EnvironmentsManager: React.FC<Props> = ({
 
 	// Memoized lists for dropdowns
 	const coreImages = useMemo(
-		() => images.filter((img) => img.repository.includes("library/epicflow")),
+		() => images.filter((img) => img.repository?.includes("library/epicflow")),
 		[images]
 	);
 	const assistanceImages = useMemo(
-		() => images.filter((img) => img.repository.includes("virtualassistance")),
+		() => images.filter((img) => img.repository?.includes("virtualassistance")),
 		[images]
 	);
 
@@ -84,7 +82,7 @@ const EnvironmentsManager: React.FC<Props> = ({
 			alert("Please fill all fields to start an environment.");
 			return;
 		}
-		setIsSubmitting(true);
+		setLoading(true);
 		try {
 			await startNewEnvironment(startTag, +startPort, startStorage);
 			alert("New environment started successfully!");
@@ -93,7 +91,7 @@ const EnvironmentsManager: React.FC<Props> = ({
 			console.error(error);
 			alert("Failed to start new environment.");
 		} finally {
-			setIsSubmitting(false);
+			setLoading(false);
 		}
 	};
 
@@ -111,7 +109,7 @@ const EnvironmentsManager: React.FC<Props> = ({
 			alert("Please select a pod and an image.");
 			return;
 		}
-		setIsSubmitting(true);
+		setLoading(true);
 		try {
 			await addImageToPod(addPodId, addImageId, addImageType, env);
 			alert("Image added to env successfully!");
@@ -120,7 +118,7 @@ const EnvironmentsManager: React.FC<Props> = ({
 			console.error(error);
 			alert("Failed to add image to env.");
 		} finally {
-			setIsSubmitting(false);
+			setLoading(false);
 		}
 	};
 
@@ -134,7 +132,7 @@ const EnvironmentsManager: React.FC<Props> = ({
 		if (
 			window.confirm(`Are you sure you want to delete instance ${deletePodId}?`)
 		) {
-			setIsSubmitting(true);
+			setLoading(true);
 			try {
 				await deleteInstance(deletePodId);
 				alert("Instance deleted successfully!");
@@ -144,13 +142,13 @@ const EnvironmentsManager: React.FC<Props> = ({
 				console.error(error);
 				alert("Failed to delete instance.");
 			} finally {
-				setIsSubmitting(false);
+				setLoading(false);
 			}
 		}
 	};
 
 	return (
-		<div className="p-6 mt-8 bg-white rounded-lg shadow-md">
+		<div className="p-6 bg-white rounded-lg shadow-md">
 			<div className="flex justify-between items-center mb-4">
 				<h2 className="text-2xl font-bold">Running Environments</h2>
 				<button
@@ -188,11 +186,24 @@ const EnvironmentsManager: React.FC<Props> = ({
 						</p>
 						<div className="mt-2">
 							<h4 className="font-semibold">Containers:</h4>
-							<ul className="list-disc list-inside text-sm">
-								{pod.containers.map((c) => (
-									<li key={c.container}>{c.container}</li>
-								))}
-							</ul>
+							{pod.containers.map((container) => (
+								<div key={container.container} className="ml-4 mt-1">
+									<p>{container.container}</p>
+									<details>
+										<summary className="cursor-pointer text-xs text-gray-500">
+											Mounts ({container.mounts.length})
+										</summary>
+										<ul className="list-disc list-inside text-xs font-mono pl-4">
+											{container.mounts.map((m) => (
+												<li key={m.source}>
+													<code className="break-all">{m.source}</code> →{" "}
+													<code className="break-all">{m.destination}</code>
+												</li>
+											))}
+										</ul>
+									</details>
+								</div>
+							))}
 						</div>
 					</div>
 				))}
@@ -264,7 +275,7 @@ const EnvironmentsManager: React.FC<Props> = ({
 						</div>
 						<button
 							type="submit"
-							disabled={isSubmitting}
+							disabled={loading || !startTag || !startPort || !startStorage}
 							className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400"
 						>
 							Start
@@ -297,7 +308,7 @@ const EnvironmentsManager: React.FC<Props> = ({
 						</div>
 						<button
 							type="submit"
-							disabled={isSubmitting || !deletePodId}
+							disabled={loading || !deletePodId}
 							className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400"
 						>
 							Delete
@@ -380,7 +391,7 @@ const EnvironmentsManager: React.FC<Props> = ({
 					</div>
 					<button
 						type="submit"
-						disabled={isSubmitting}
+						disabled={loading || !addPodId || !addImageId || !addImageType}
 						className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
 					>
 						Add Image

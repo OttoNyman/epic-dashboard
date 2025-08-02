@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>API Dashboard</title>
+		<style>
+			code {
+				background: #f4f4f4;
+				padding: 2px 4px;
+				border-radius: 4px;
+			}
+			summary {
+				cursor: pointer;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>FastAPI Controller UI</h1>
+
+		<section>
+			<h2>📦 Get Storages and Images</h2>
+			<button onclick="getStoragesAndImages()">Fetch</button>
+			<pre id="storagesImagesOutput"></pre>
+		</section>
+
+		<section>
+			<h2>🚀 Start New Environment</h2>
+			<label for="tag">Tag:</label>
+			<select id="tag"></select>
+
+			<label for="port">Port:</label>
+			<input id="port" type="number" placeholder="Port" />
+
+			<label for="storage">Storage:</label>
+			<select id="storage"></select>
+
+			<button onclick="startNewEnv()">Start</button>
+			<pre id="startOutput"></pre>
+		</section>
+
+		<section>
+			<h2>🧱 Add Image to Pod</h2>
+			<label for="targetPod">Pod:</label>
+			<select id="targetPod"></select>
+
+			<label for="targetImage">Image ID:</label>
+			<select id="targetImage"></select>
+
+			<label for="imageType">Type:</label>
+			<select id="imageType">
+				<option value="client">client</option>
+				<option value="server">server</option>
+				<option value="feedback">feedback</option>
+			</select>
+
+			<label for="envJson">Environment Variables (JSON):</label><br />
+			<textarea id="envJson" rows="15" cols="100">
+      {
+        "BASE_RETRIEVER_URL": "http://epic-ai-tokarev.ddns.hysdev.com:7701", 
+        "BASE_EMBEDDINGS_URL": "http://epic-ai-tokarev.ddns.hysdev.com:7702", 
+        "AUTH_SUPERUSER_URL":"http://localhost/api/api/",
+        "BASE_URL_EF_SITE":"http://localhost/api/api/",
+        "IS_SUPERUSER_AUTH_BY_PASS":"False",
+        "PATH_KEY_superuser":"/etc/ssl/certs/private_key.pem",
+        "PATH_PEM_superuser":"/etc/ssl/certs/certificate.pem",
+        "SUPERUSER_LOGIN": "PO", 
+        "SUPERUSER_PASSWORD": "Epica23!", 
+        "LLM_TYPE": "OPENAI",
+        "OPENAI_API_KEY": "TYPE HERE!!!",
+        "OPENAI_API_MODEL": "gpt-4o", 
+        "OPENAI_API_VERSION": "2024-02-15-preview",
+        "IS_SQL_FUNC_ENABLE": "1", 
+        "LOG_LEVEL": "ERROR", 
+        "PROJECT_DATA_REPORT_COL_DIFFERENCE_SHORTAGE_DAME_NAME": "DueDateDifferenceShortageCalendarDays"
+        }
+    </textarea
+			><br />
+
+			<button onclick="addImageToPod()">Add</button>
+			<pre id="addImageToPodOutput"></pre>
+		</section>
+
+		<section>
+			<h2>📥 Add Core Image</h2>
+			<input id="coreImageLink" placeholder="Image URL" />
+			<button onclick="addCoreImage()">Add</button>
+			<pre id="coreImageOutput"></pre>
+		</section>
+
+		<section>
+			<h2>📥 Add GitLab Image</h2>
+			<input id="gitlabImageLink" placeholder="Image URL" />
+			<button onclick="addGitlabImage()">Add</button>
+			<pre id="gitlabImageOutput"></pre>
+		</section>
+
+		<section>
+			<h2>🚀 Running Instances</h2>
+			<button onclick="getRunningInstances()">Load</button>
+			<div id="runningInstancesOutput"></div>
+		</section>
+
+		<section>
+			<h2>🗑 Delete Instance</h2>
+			<input id="deletePodId" placeholder="Pod ID" />
+			<button onclick="deleteInstance()">Delete</button>
+			<pre id="deleteOutput"></pre>
+		</section>
+
+		<script>
+			const baseUrl = "http://epic-ai-tokarev.ddns.hysdev.com:8000"; // Change this if deployed elsewhere
+
+			async function getStoragesAndImages() {
+				const res = await fetch(`${baseUrl}/get_list_storages_and_images`);
+				const data = await res.json();
+
+				const outputDiv = document.getElementById("storagesImagesOutput");
+
+				// Populate Storage <select>
+				const storageSelect = document.getElementById("storage");
+				storageSelect.innerHTML = "";
+				data.storages.forEach((storage) => {
+					const opt = document.createElement("option");
+					opt.value = storage;
+					opt.textContent = storage;
+					storageSelect.appendChild(opt);
+				});
+
+				// Populate Tag <select>
+				const tagSelect = document.getElementById("tag");
+				tagSelect.innerHTML = "";
+				const uniqueTags = [
+					...new Set(data.images.images.map((img) => img.tag)),
+				];
+				uniqueTags.forEach((tag) => {
+					const opt = document.createElement("option");
+					opt.value = tag;
+					opt.textContent = tag;
+					tagSelect.appendChild(opt);
+				});
+
+				// Show storages and images info
+				let html = "<h3>📦 Storages</h3><ul>";
+				data.storages.forEach((storage) => {
+					html += `<li>${storage}</li>`;
+				});
+				html += "</ul>";
+
+				html += `
+    <h3>🧱 Docker Images</h3>
+    <table border="1" cellspacing="0" cellpadding="5">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Repository</th>
+          <th>Tag</th>
+          <th>Size (MB)</th>
+          <th>Created</th>
+          <th>Containers</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+				data.images.images.forEach((img) => {
+					const sizeMB = (img.size / 1024 / 1024).toFixed(1);
+					const createdDate = new Date(img.created * 1000).toLocaleString();
+					html += `
+      <tr>
+        <td>${img.id}</td>
+        <td>${img.repository}</td>
+        <td>${img.tag}</td>
+        <td>${sizeMB}</td>
+        <td>${createdDate}</td>
+        <td>${img.containers}</td>
+      </tr>
+    `;
+				});
+
+				html += "</tbody></table>";
+				outputDiv.innerHTML = html;
+				const imageIdSelect = document.getElementById("targetImage");
+				imageIdSelect.innerHTML = "";
+				data.images.images.forEach((img) => {
+					const opt = document.createElement("option");
+					opt.value = img.id;
+					opt.textContent = `${img.repository}:${img.tag}`;
+					imageIdSelect.appendChild(opt);
+				});
+			}
+
+			async function startNewEnv() {
+				const tag = document.getElementById("tag").value;
+				const port = document.getElementById("port").value;
+				const storage = document.getElementById("storage").value;
+
+				const res = await fetch(
+					`${baseUrl}/start_new?tag=${tag}&port=${port}&storage=${storage}`
+				);
+				const data = await res.json();
+
+				const containersRows = data.containers
+					.map(
+						(c) => `
+    <tr>
+      <td>${c.name}</td>
+      <td>${c.id}</td>
+    </tr>
+  `
+					)
+					.join("");
+
+				document.getElementById("startOutput").innerHTML = `
+    <table border="1" cellpadding="8" cellspacing="0">
+      <tr><th colspan="2">🚀 New Environment</th></tr>
+      <tr><td><strong>Pod Name</strong></td><td>${data.pod_name}</td></tr>
+      <tr><td><strong>Port</strong></td><td>${data.port}</td></tr>
+      <tr><td><strong>Storage Path</strong></td><td><code>${
+				data.storage_path
+			}</code></td></tr>
+      <tr><td><strong>Network</strong></td><td>${data.network}</td></tr>
+      <tr><td><strong>IP Address</strong></td><td>${
+				data.ip_address || "—"
+			}</td></tr>
+    </table>
+
+    <br />
+
+    <table border="1" cellpadding="8" cellspacing="0">
+      <tr><th colspan="2">🧱 Containers</th></tr>
+      <tr><th>Name</th><th>ID</th></tr>
+      ${containersRows}
+    </table>
+  `;
+			}
+
+			async function addCoreImage() {
+				const link = document.getElementById("coreImageLink").value;
+				const res = await fetch(`${baseUrl}/add_core_image`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ link }),
+				});
+				const data = await res.json();
+				document.getElementById("coreImageOutput").textContent = JSON.stringify(
+					data,
+					null,
+					2
+				);
+			}
+
+			async function addGitlabImage() {
+				const link = document.getElementById("gitlabImageLink").value;
+				const res = await fetch(`${baseUrl}/add_gitlab_image`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ link }),
+				});
+				const data = await res.json();
+				document.getElementById("gitlabImageOutput").textContent =
+					JSON.stringify(data, null, 2);
+			}
+
+			async function getRunningInstances() {
+				const res = await fetch(`${baseUrl}/get_all_running_instanses`);
+				const data = await res.json();
+
+				const pods = data.stdout.pods;
+				const outputDiv = document.getElementById("runningInstancesOutput");
+
+				let html = "";
+
+				pods.forEach((pod) => {
+					html += `
+      <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
+        <h3>🧩 Pod: ${pod.pod_name}</h3>
+        <p><strong>ID:</strong> ${pod.id}</p>
+        <p><strong>Port Mapping:</strong> ${pod.ports
+					.map((p) => `${p.host} → ${p.container}`)
+					.join(", ")}</p>
+        <h4>🧱 Containers:</h4>
+    `;
+
+					pod.containers.forEach((container) => {
+						html += `
+        <div style="margin-left:20px; margin-bottom:10px;">
+          <p><strong>Container:</strong> ${container.container}</p>
+          <details>
+            <summary>📂 Mounts (${container.mounts.length})</summary>
+            <ul>
+              ${container.mounts
+								.map(
+									(m) =>
+										`<li><code>${m.source}</code> → <code>${m.destination}</code></li>`
+								)
+								.join("")}
+            </ul>
+          </details>
+        </div>
+      `;
+					});
+
+					html += `</div>`;
+				});
+
+				outputDiv.innerHTML = html;
+				const podSelect = document.getElementById("targetPod");
+				podSelect.innerHTML = "";
+				pods.forEach((pod) => {
+					const opt = document.createElement("option");
+					opt.value = pod.id;
+					opt.textContent = pod.pod_name;
+					podSelect.appendChild(opt);
+				});
+			}
+
+			async function deleteInstance() {
+				const podId = document.getElementById("deletePodId").value;
+				const res = await fetch(`${baseUrl}/delete_instanse?pod_id=${podId}`);
+				const data = await res.json();
+				document.getElementById("deleteOutput").textContent = JSON.stringify(
+					data,
+					null,
+					2
+				);
+			}
+			window.onload = () => {
+				getStoragesAndImages();
+				getRunningInstances();
+			};
+
+			async function addImageToPod() {
+				const podId = document.getElementById("targetPod").value;
+				const imageId = document.getElementById("targetImage").value;
+				const type = document.getElementById("imageType").value;
+				let env;
+
+				try {
+					env = JSON.parse(document.getElementById("envJson").value);
+				} catch (err) {
+					alert("❌ Invalid JSON in Environment Variables");
+					return;
+				}
+
+				const res = await fetch(`${baseUrl}/add_image_to_pod`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ pod_id: podId, image_id: imageId, type, env }),
+				});
+
+				const data = await res.json();
+				document.getElementById("addImageToPodOutput").textContent =
+					JSON.stringify(data, null, 2);
+			}
+		</script>
+	</body>
+</html>

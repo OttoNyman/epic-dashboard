@@ -46,7 +46,6 @@ const EnvironmentsManager: React.FC<Props> = ({
 	storages,
 	onRefresh,
 }) => {
-
 	const { loading, setLoading } = useLoader();
 
 	// State for "Start New" form
@@ -177,12 +176,44 @@ const EnvironmentsManager: React.FC<Props> = ({
 							))}
 						</div>
 						<h3 className="font-bold text-lg">{pod.pod_name}</h3>
-						<p className="text-sm text-gray-600 font-mono break-all">
-							ID: {pod.id}
-						</p>
-						<p className="text-sm">
+						<p className="text-sm font-mono break-all">
 							Ports:{" "}
 							{pod.ports.map((p) => `${p.host} → ${p.container}`).join(", ")}
+						</p>
+						{/* Поиск storageName по mounts */}
+						{(() => {
+							let storageName: string | null = null;
+							outer: for (const container of pod.containers) {
+								for (const m of container.mounts) {
+									const idx = m.source.indexOf("Inited_storages/");
+									if (idx !== -1) {
+										const after = m.source.slice(
+											idx + "Inited_storages/".length
+										);
+										const name = after.split("/")[0];
+										storageName = name;
+										break outer;
+									}
+								}
+							}
+							return storageName ? (
+								<p className="text-sm font-mono break-all">
+									Storage: {storageName}
+								</p>
+							) : null;
+						})()}
+
+						<p
+							className="text-sm text-gray-600 font-mono truncate cursor-pointer select-none"
+							title="Click to copy ID"
+							onClick={() => navigator.clipboard.writeText(pod.id)}
+							style={{
+								textOverflow: "ellipsis",
+								overflow: "hidden",
+								whiteSpace: "nowrap",
+							}}
+						>
+							ID: {pod.id}
 						</p>
 						<div className="mt-2">
 							<h4 className="font-semibold">Containers:</h4>

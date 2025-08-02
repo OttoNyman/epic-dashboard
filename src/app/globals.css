@@ -28,3 +28,9 @@ body {
 *:not([border='0']) {
   border-color: #e5e7eb;
 }
+
+input:focus-visible, select:focus-visible {
+  border-width: 1px !important;
+  border-color: #a3a3a3 !important;
+  outline: none;
+}

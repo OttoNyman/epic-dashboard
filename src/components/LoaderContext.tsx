@@ -4,6 +4,7 @@ import React, { createContext, useState, useContext } from "react";
 
 const LoaderContext = createContext({
 	loading: false,
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	setLoading: (val: boolean) => {},
 });
 

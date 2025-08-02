@@ -4,12 +4,12 @@ import React, { useState, useMemo } from "react";
 import { DockerImage } from "@/types";
 import { addCoreImage, addGitlabImage } from "@/services/api";
 import { useLoader } from "./LoaderContext";
+import { useImages } from "./ImagesContext";
 
 type SortDirection = "asc" | "desc";
 
 interface Props {
 	storages: string[];
-	images: DockerImage[];
 	onRefresh: () => void;
 }
 
@@ -29,7 +29,8 @@ const ArrowIcon = ({ direction }: { direction: "asc" | "desc" }) => (
 	</svg>
 );
 
-const ImagesManager: React.FC<Props> = ({ storages, images, onRefresh }) => {
+const ImagesManager: React.FC<Props> = ({ storages, onRefresh }) => {
+	const images = useImages();
 	const [coreImageLink, setCoreImageLink] = useState("");
 	const [gitlabImageLink, setGitlabImageLink] = useState("");
 	const [sortDirection, setSortDirection] = useState<SortDirection>("desc");

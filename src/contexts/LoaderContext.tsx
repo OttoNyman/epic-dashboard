@@ -14,6 +14,7 @@ export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
 	const [loading, setLoading] = useState(false);
+	
 	return (
 		<LoaderContext.Provider value={{ loading, setLoading }}>
 			{children}

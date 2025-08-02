@@ -1,16 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useLoader } from "@/components/LoaderContext";
-import Loader from "@/components/Loader";
+import { useLoader } from "@/contexts/LoaderContext";
 import ImagesManager from "@/components/ImagesManager";
 import EnvironmentsManager from "@/components/EnvironmentsManager";
 import { DockerImage, RunningPod } from "@/types";
-import { ImagesProvider } from "@/components/ImagesContext";
+import { ImagesProvider } from "@/contexts/ImagesContext";
 import { getStoragesAndImages, getRunningInstances } from "@/services/api";
-import { StoragesProvider } from "@/components/StoragesContext";
-import { RunningInstancesProvider } from "@/components/RunningInstancesContext";
-import { RefreshProvider } from "@/components/RefreshContext";
+import { StoragesProvider } from "@/contexts/StoragesContext";
+import { RunningInstancesProvider } from "@/contexts/RunningInstancesContext";
+import { RefreshProvider } from "@/contexts/RefreshContext";
 
 export default function Home() {
 	// State for data
@@ -48,11 +47,6 @@ export default function Home() {
 	useEffect(() => {
 		fetchData();
 	}, [fetchData]);
-
-	// Main render logic
-	if (loading) {
-		return <Loader />;
-	}
 
 	if (error) {
 		return (

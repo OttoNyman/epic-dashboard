@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from "react";
 import { addImageToPod } from "@/services/api";
-import { useLoader } from "./LoaderContext";
-import { useImages } from "./ImagesContext";
-import { useRunningInstances } from "./RunningInstancesContext";
-import { useRefresh } from "./RefreshContext";
+import { useLoader } from "../contexts/LoaderContext";
+import { useImages } from "../contexts/ImagesContext";
+import { useRunningInstances } from "../contexts/RunningInstancesContext";
+import { useRefresh } from "../contexts/RefreshContext";
 
 const DEFAULT_ENV_VARS = JSON.stringify(
 	{

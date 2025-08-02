@@ -4,7 +4,7 @@ import RunningInstancesList from "./RunningInstancesList";
 import StartNewEnvironmentForm from "./StartNewEnvironmentForm";
 import DeleteInstanceForm from "./DeleteInstanceForm";
 import AddImageToEnvForm from "./AddImageToEnvForm";
-import { useRefresh } from "./RefreshContext";
+import { useRefresh } from "../contexts/RefreshContext";
 
 const EnvironmentsManager: React.FC = () => {
 	const onRefresh = useRefresh();

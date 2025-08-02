@@ -1,9 +1,9 @@
 import React from "react";
-import { useRunningInstances } from "./RunningInstancesContext";
+import { useRunningInstances } from "../contexts/RunningInstancesContext";
 
 const RunningInstancesList: React.FC = () => {
 	const runningInstances = useRunningInstances();
-	
+
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
 			{runningInstances.map((pod) => (

@@ -1,9 +1,9 @@
 import { startNewEnvironment } from "@/services/api";
 import React, { useMemo, useState } from "react";
-import { useLoader } from "./LoaderContext";
-import { useImages } from "./ImagesContext";
-import { useStorages } from "./StoragesContext";
-import { useRefresh } from "./RefreshContext";
+import { useLoader } from "../contexts/LoaderContext";
+import { useImages } from "../contexts/ImagesContext";
+import { useStorages } from "../contexts/StoragesContext";
+import { useRefresh } from "../contexts/RefreshContext";
 
 const StartNewEnvironmentForm: React.FC = () => {
 	const images = useImages();

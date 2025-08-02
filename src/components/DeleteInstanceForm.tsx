@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useLoader } from "./LoaderContext";
+import { useLoader } from "../contexts/LoaderContext";
 import { deleteInstance } from "@/services/api";
-import { useRunningInstances } from "./RunningInstancesContext";
-import { useRefresh } from "./RefreshContext";
+import { useRunningInstances } from "../contexts/RunningInstancesContext";
+import { useRefresh } from "../contexts/RefreshContext";
 
 const DeleteInstanceForm: React.FC = () => {
 	const runningInstances = useRunningInstances();

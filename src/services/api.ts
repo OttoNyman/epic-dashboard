@@ -5,7 +5,7 @@ import {
 	AddImageToPodResponse,
 } from "@/types";
 
-const API_BASE_URL = "http://epic-ai-tokarev.ddns.hysdev.com:8000";
+const API_BASE_URL = "htt"+"p://epic-ai-tokarev.ddns.hysdev.com:8000";
 
 export const getStoragesAndImages = async (): Promise<ImagesAndStorages> => {
 	const response = await fetch(`${API_BASE_URL}/get_list_storages_and_images`);

@@ -8,11 +8,14 @@ import EnvironmentsManager from "@/components/EnvironmentsManager";
 import { DockerImage, RunningPod } from "@/types";
 import { ImagesProvider } from "@/components/ImagesContext";
 import { getStoragesAndImages, getRunningInstances } from "@/services/api";
+import { StoragesProvider } from "@/components/StoragesContext";
+import { RunningInstancesProvider } from "@/components/RunningInstancesContext";
+import { RefreshProvider } from "@/components/RefreshContext";
 
 export default function Home() {
 	// State for data
-	const [storages, setStorages] = useState<string[]>([]);
 	const [images, setImages] = useState<DockerImage[]>([]);
+	const [storages, setStorages] = useState<string[]>([]);
 	const [runningInstances, setRunningInstances] = useState<RunningPod[]>([]);
 
 	// State for errors
@@ -67,21 +70,24 @@ export default function Home() {
 
 	return (
 		<ImagesProvider images={images}>
-			<div className="space-y-8 min-h-screen flex flex-col">
-				<h1 className="text-4xl font-bold text-center">Environments Dashboard</h1>
-				<EnvironmentsManager
-					runningInstances={runningInstances}
-					storages={storages}
-					onRefresh={fetchData}
-				/>
-				<ImagesManager
-					storages={storages}
-					onRefresh={fetchData}
-				/>
-				<footer className="mt-auto py-4 text-xs text-gray-400 text-center border-t border-gray-100">
-					BE: S. Tokarev &nbsp;|&nbsp; UI: A. Krasnoiarskyi
-				</footer>
-			</div>
+			<StoragesProvider storages={storages}>
+				<RunningInstancesProvider runningInstances={runningInstances}>
+					<RefreshProvider onRefresh={fetchData}>
+						<div className="space-y-8 min-h-screen flex flex-col">
+							<h1 className="text-4xl font-bold text-center">
+								Environments Dashboard
+							</h1>
+
+							<EnvironmentsManager />
+							<ImagesManager />
+
+							<footer className="mt-auto py-4 text-xs text-gray-400 text-center border-t border-gray-100">
+								BE: S. Tokarev &nbsp;|&nbsp; UI: A. Krasnoiarskyi
+							</footer>
+						</div>
+					</RefreshProvider>
+				</RunningInstancesProvider>
+			</StoragesProvider>
 		</ImagesProvider>
 	);
 }

@@ -1,19 +1,14 @@
 import React, { useState } from "react";
-import { RunningPod } from "@/types";
 import { useLoader } from "./LoaderContext";
 import { deleteInstance } from "@/services/api";
+import { useRunningInstances } from "./RunningInstancesContext";
+import { useRefresh } from "./RefreshContext";
 
-interface DeleteInstanceFormProps {
-	runningInstances: RunningPod[];
-	onRefresh: () => void;
-}
-
-const DeleteInstanceForm: React.FC<DeleteInstanceFormProps> = ({
-	runningInstances,
-	onRefresh,
-}) => {
-	const [deletePodId, setDeletePodId] = useState("");
+const DeleteInstanceForm: React.FC = () => {
+	const runningInstances = useRunningInstances();
+	const onRefresh = useRefresh();
 	const { loading, setLoading } = useLoader();
+	const [deletePodId, setDeletePodId] = useState("");
 
 	const handleDelete = async (e: React.FormEvent) => {
 		e.preventDefault();

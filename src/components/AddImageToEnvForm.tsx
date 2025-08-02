@@ -1,13 +1,9 @@
 import React, { useMemo, useState } from "react";
-import { DockerImage, RunningPod } from "@/types";
 import { addImageToPod } from "@/services/api";
 import { useLoader } from "./LoaderContext";
 import { useImages } from "./ImagesContext";
-
-interface AddImageToEnvFormProps {
-	runningInstances: RunningPod[];
-	onRefresh: () => void;
-}
+import { useRunningInstances } from "./RunningInstancesContext";
+import { useRefresh } from "./RefreshContext";
 
 const DEFAULT_ENV_VARS = JSON.stringify(
 	{
@@ -33,11 +29,10 @@ const DEFAULT_ENV_VARS = JSON.stringify(
 	2
 );
 
-const AddImageToEnvForm: React.FC<AddImageToEnvFormProps> = ({
-	runningInstances,
-	onRefresh,
-}) => {
+const AddImageToEnvForm: React.FC = () => {
 	const images = useImages();
+	const runningInstances = useRunningInstances();
+	const onRefresh = useRefresh();
 	const { loading, setLoading } = useLoader();
 	const [addPodId, setAddPodId] = useState("");
 	const [addImageId, setAddImageId] = useState("");

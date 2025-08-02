@@ -5,13 +5,10 @@ import { DockerImage } from "@/types";
 import { addCoreImage, addGitlabImage } from "@/services/api";
 import { useLoader } from "./LoaderContext";
 import { useImages } from "./ImagesContext";
+import { useStorages } from "./StoragesContext";
+import { useRefresh } from "./RefreshContext";
 
 type SortDirection = "asc" | "desc";
-
-interface Props {
-	storages: string[];
-	onRefresh: () => void;
-}
 
 const ArrowIcon = ({ direction }: { direction: "asc" | "desc" }) => (
 	<svg
@@ -29,13 +26,15 @@ const ArrowIcon = ({ direction }: { direction: "asc" | "desc" }) => (
 	</svg>
 );
 
-const ImagesManager: React.FC<Props> = ({ storages, onRefresh }) => {
+const ImagesManager: React.FC = () => {
 	const images = useImages();
+	const storages = useStorages();
+	const onRefresh = useRefresh();
+	const { loading, setLoading } = useLoader();
 	const [coreImageLink, setCoreImageLink] = useState("");
 	const [gitlabImageLink, setGitlabImageLink] = useState("");
 	const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 	const [sortColumn, setSortColumn] = useState<string>("created");
-	const { loading, setLoading } = useLoader();
 
 	const sortedImages = useMemo(() => {
 		return [...images].sort((a, b) => {

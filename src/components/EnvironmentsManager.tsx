@@ -1,22 +1,14 @@
 "use client";
 
-import { RunningPod } from "@/types";
 import RunningInstancesList from "./RunningInstancesList";
 import StartNewEnvironmentForm from "./StartNewEnvironmentForm";
 import DeleteInstanceForm from "./DeleteInstanceForm";
 import AddImageToEnvForm from "./AddImageToEnvForm";
+import { useRefresh } from "./RefreshContext";
 
-interface Props {
-	runningInstances: RunningPod[];
-	storages: string[];
-	onRefresh: () => void;
-}
+const EnvironmentsManager: React.FC = () => {
+	const onRefresh = useRefresh();
 
-const EnvironmentsManager: React.FC<Props> = ({
-	runningInstances,
-	storages,
-	onRefresh,
-}) => {
 	return (
 		<div className="p-6 bg-white rounded-lg shadow-md">
 			<div className="flex justify-between items-center mb-4">
@@ -29,23 +21,13 @@ const EnvironmentsManager: React.FC<Props> = ({
 				</button>
 			</div>
 
-			<RunningInstancesList runningInstances={runningInstances} />
+			<RunningInstancesList />
 
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-				<StartNewEnvironmentForm
-					storages={storages}
-					onRefresh={onRefresh}
-				/>
-
-				<DeleteInstanceForm
-					runningInstances={runningInstances}
-					onRefresh={onRefresh}
-				/>
+				<StartNewEnvironmentForm />
+				<DeleteInstanceForm />
 			</div>
-			<AddImageToEnvForm
-				runningInstances={runningInstances}
-				onRefresh={onRefresh}
-			/>
+			<AddImageToEnvForm />
 		</div>
 	);
 };

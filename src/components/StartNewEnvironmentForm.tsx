@@ -2,21 +2,17 @@ import { startNewEnvironment } from "@/services/api";
 import React, { useMemo, useState } from "react";
 import { useLoader } from "./LoaderContext";
 import { useImages } from "./ImagesContext";
+import { useStorages } from "./StoragesContext";
+import { useRefresh } from "./RefreshContext";
 
-interface StartNewEnvironmentFormProps {
-	storages: string[];
-	onRefresh: () => void;
-}
-
-const StartNewEnvironmentForm: React.FC<StartNewEnvironmentFormProps> = ({
-	storages,
-	onRefresh,
-}) => {
+const StartNewEnvironmentForm: React.FC = () => {
 	const images = useImages();
+	const storages = useStorages();
+	const onRefresh = useRefresh();
+	const { loading, setLoading } = useLoader();
 	const [startTag, setStartTag] = useState("");
 	const [startPort, setStartPort] = useState<string>("8888");
 	const [startStorage, setStartStorage] = useState("");
-	const { loading, setLoading } = useLoader();
 
 	const handleStartNew = async (e: React.FormEvent) => {
 		e.preventDefault();

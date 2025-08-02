@@ -9,6 +9,10 @@ const DEFAULT_ENV_VARS = JSON.stringify(
 	{
 		SUPERUSER_LOGIN: "PO",
 		SUPERUSER_PASSWORD: "Epica23!",
+		LLM_TYPE: "OPENAI",
+		OPENAI_API_KEY: "",
+		OPENAI_API_MODEL: "gpt-4o",
+		OPENAI_API_VERSION: "2024-02-15-preview",
 		BASE_RETRIEVER_URL: "http://epic-ai-tokarev.ddns.hysdev.com:7701",
 		BASE_EMBEDDINGS_URL: "http://epic-ai-tokarev.ddns.hysdev.com:7702",
 		AUTH_SUPERUSER_URL: "http://localhost/api/api/",
@@ -16,10 +20,6 @@ const DEFAULT_ENV_VARS = JSON.stringify(
 		IS_SUPERUSER_AUTH_BY_PASS: "False",
 		PATH_KEY_superuser: "/etc/ssl/certs/private_key.pem",
 		PATH_PEM_superuser: "/etc/ssl/certs/certificate.pem",
-		LLM_TYPE: "OPENAI",
-		OPENAI_API_KEY: "",
-		OPENAI_API_MODEL: "gpt-4o",
-		OPENAI_API_VERSION: "2024-02-15-preview",
 		IS_SQL_FUNC_ENABLE: "1",
 		LOG_LEVEL: "DEBUG",
 		PROJECT_DATA_REPORT_COL_DIFFERENCE_SHORTAGE_DAME_NAME:

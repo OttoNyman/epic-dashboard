@@ -1,0 +1,52 @@
+# Название вашего воркфлоу, которое будет отображаться в GitHub
+name: Build Dashboard Project
+
+# Триггер для запуска: push в ветку 'main'
+on:
+  push:
+    branches: [main]
+
+# Задачи, которые будут выполняться
+jobs:
+  build:
+    # Используем последнюю версию Ubuntu для сборки
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Клонируем код из вашего репозитория
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Устанавливаем Node.js нужной версии
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Укажите вашу версию Node.js
+          node-version: "20"
+          # Используем кеш для ускорения последующих сборок
+          cache: "npm"
+
+      # 3. Устанавливаем все зависимости проекта
+      - name: Install Dependencies
+        # 'npm ci' — более быстрая и строгая версия 'npm install' для автоматизации
+        run: npm ci
+
+      # 4. Собираем проект
+      - name: Build Project
+        run: npm run build
+
+      # 5. Архивируем собранный проект в артефакт
+      - name: Archive Production Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # Название архива, который вы сможете скачать
+          name: dashboard-build
+          # Папки и файлы, которые нужно включить в архив
+          # .next — это сама сборка Next.js
+          # public — статичные файлы
+          # package.json и next.config.js — необходимы для запуска сервера
+          path: |
+            .next
+            public
+            package.json
+            next.config.js

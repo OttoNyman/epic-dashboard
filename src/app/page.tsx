@@ -19,9 +19,8 @@ export default function Home() {
 
 	// State for errors
 	const [error, setError] = useState<string | null>(null);
-	const { loading, setLoading } = useLoader();
+	const { setLoading } = useLoader();
 
-	// Data fetching function
 	const fetchData = useCallback(async () => {
 		setLoading(true);
 		setError(null);

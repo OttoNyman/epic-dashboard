@@ -36,19 +36,17 @@ jobs:
       # 4. Собираем проект
       - name: Build Project
         run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
 
-      # 5. Архивируем собранный проект в артефакт
-      - name: Archive Production Artifact
+      # 5. Показываем содержимое папки для отладки
+      - name: List files in the directory
+        run: ls -R
+
+     # 6. Архивируем собранный статический сайт
+      - name: Archive Dashboard Static Site
         uses: actions/upload-artifact@v4
         with:
-          # Название архива, который вы сможете скачать
-          name: dashboard-build
-          # Папки и файлы, которые нужно включить в архив
-          # .next — это сама сборка Next.js
-          # public — статичные файлы
-          # package.json и next.config.js — необходимы для запуска сервера
-          path: |
-            .next
-            public
-            package.json
-            next.config.js
+          # Название архива
+          name: static-site
+          path: out

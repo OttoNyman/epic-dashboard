@@ -29,7 +29,8 @@ jobs:
       # 3. Устанавливаем все зависимости проекта
       - name: Install Dependencies
         # 'npm ci' — более быстрая и строгая версия 'npm install' для автоматизации
-        run: npm ci
+        # run: npm ci
+        run: npm install
 
       # 4. Собираем проект
       - name: Build Project

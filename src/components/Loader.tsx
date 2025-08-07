@@ -1,15 +1,14 @@
 "use client";
 
-import { useLoader } from "../contexts/LoaderContext"; // Предполагается, что вы используете этот контекст
+import { useLoader } from "../contexts/LoaderContext";
 import { useState, useEffect } from "react";
 
-// Встроенные стили для градиентного лоадера
 const styles = `
 .loader-wrapper-gradient {
     position: relative;
-    width: 2000px;
-    height: 2000px;
-    animation: appear-smooth 10s ease-out forwards;
+    width: 50px;
+    height: 50px;
+    animation: appear-smooth 1s ease-out forwards;
 }
 
 .gradient-orb {
@@ -24,7 +23,7 @@ const styles = `
     );
     border-radius: 50%;
     filter: blur(40px);
-    animation: rotate-gradient 3s linear infinite;
+    animation: rotate-gradient 3s linear infinite, pulse 1.5s infinite;
 }
 
 .gradient-orb-core {
@@ -38,6 +37,7 @@ const styles = `
     transform: translate(-50%, -50%);
     filter: blur(5px);
     opacity: 0.5;
+    animation: pulse-core 1.5s infinite;
 }
 
 @keyframes appear-smooth {
@@ -57,6 +57,28 @@ const styles = `
     }
     to {
         transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.08);
+        opacity: 0.85;
+    }
+}
+
+@keyframes pulse-core {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.12);
+        opacity: 0.7;
     }
 }
 `;

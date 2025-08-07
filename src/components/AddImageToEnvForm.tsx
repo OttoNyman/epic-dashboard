@@ -263,9 +263,9 @@ const AddImageToEnvForm: React.FC = () => {
 							}
 							if (key === "SUPERUSER_PASSWORD") {
 								let selectValue: string;
+								const pass1 = "Epica23!";
 								const pass2 = "fG4Ev3r_3p1kF'F.yE38rJ,su'D1sE#";
-								const pass2Esc = "fG4Ev3r_3p1kF&#39;F.yE38rJ,su&#39;D1sE#";
-								if (value === "Epica23!" || value === pass2) {
+								if (value === pass1 || value === pass2) {
 									selectValue = value;
 								} else {
 									selectValue = "CUSTOM";
@@ -286,13 +286,12 @@ const AddImageToEnvForm: React.FC = () => {
 													setEnvObj({
 														...envObj,
 														[key]:
-															envObj[key] === "Epica23!" ||
-															envObj[key] === pass2
+															envObj[key] === pass1 || envObj[key] === pass2
 																? ""
 																: envObj[key],
 													});
-												} else if (v === pass2Esc) {
-													setEnvObj({ ...envObj, [key]: pass2 });
+													// } else if (v === pass2Esc) {
+													// 	setEnvObj({ ...envObj, [key]: pass2 });
 												} else {
 													setEnvObj({ ...envObj, [key]: v });
 												}
@@ -300,8 +299,8 @@ const AddImageToEnvForm: React.FC = () => {
 											className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
 											style={{ minWidth: 0 }}
 										>
-											<option value="Epica23!">Epica23!</option>
-											<option value={pass2Esc}>{pass2}</option>
+											<option value={pass1}>{pass1}</option>
+											<option value={pass2}>{pass2}</option>
 											<option value="CUSTOM">Other...</option>
 										</select>
 										{selectValue === "CUSTOM" && (

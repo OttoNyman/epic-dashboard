@@ -43,10 +43,40 @@ const AddImageToEnvForm: React.FC = () => {
 	const [envObj, setEnvObj] = useState<{ [key: string]: string }>(
 		defaultEnvObj
 	);
+	const [customVars, setCustomVars] = useState<{ key: string; value: string }[]>(
+		[]
+	);
 	const assistanceImages = useMemo(
 		() => images.filter((img) => img.repository?.includes("virtualassistance")),
 		[images]
 	);
+
+	const handleAddCustomVar = () => {
+		setCustomVars([...customVars, { key: "", value: "" }]);
+	};
+
+	const handleCustomVarChange = (
+		idx: number,
+		field: "key" | "value",
+		val: string
+	) => {
+		const updated = [...customVars];
+		updated[idx][field] = val;
+		setCustomVars(updated);
+	};
+
+	const handleRemoveCustomVar = (idx: number) => {
+		const updated = [...customVars];
+		updated.splice(idx, 1);
+		setCustomVars(updated);
+	};
+
+	const mergedEnvObj = {
+		...envObj,
+		...Object.fromEntries(
+			customVars.filter((v) => v.key).map((v) => [v.key, v.value])
+		),
+	};
 
 	const handleAddImage = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -56,7 +86,7 @@ const AddImageToEnvForm: React.FC = () => {
 		}
 		setLoading(true);
 		try {
-			await addImageToPod(addPodId, addImageId, addImageType, envObj);
+			await addImageToPod(addPodId, addImageId, addImageType, mergedEnvObj);
 			alert("Image added to env successfully!");
 			onRefresh();
 		} catch (error) {
@@ -338,6 +368,51 @@ const AddImageToEnvForm: React.FC = () => {
 								</div>
 							);
 						})}
+						{/* Custom variables */}
+						{customVars.map((v, idx) => (
+							<div key={idx} className="flex flex-col mb-1">
+								<div className="flex gap-2 items-center">
+									<input
+										type="text"
+										value={v.key}
+										onChange={(e) =>
+											handleCustomVarChange(idx, "key", e.target.value)
+										}
+										className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
+										placeholder="Custom key"
+										style={{ minWidth: 0 }}
+									/>
+									<input
+										type="text"
+										value={v.value}
+										onChange={(e) =>
+											handleCustomVarChange(idx, "value", e.target.value)
+										}
+										className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
+										placeholder="Custom value"
+										style={{ minWidth: 0 }}
+									/>
+									<button
+										type="button"
+										onClick={() => handleRemoveCustomVar(idx)}
+										className="text-red-500 px-2"
+										title="Удалить"
+									>
+										–
+									</button>
+								</div>
+							</div>
+						))}
+						<div>
+							<button
+								type="button"
+								onClick={handleAddCustomVar}
+								className="text-green-600 text-lg px-2 py-1 rounded hover:bg-green-100"
+								title="Добавить переменную"
+							>
+								+
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>

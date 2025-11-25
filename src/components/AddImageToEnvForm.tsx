@@ -9,6 +9,8 @@ const DEFAULT_ENV_VARS = JSON.stringify(
 	{
 		SUPERUSER_LOGIN: "PO",
 		SUPERUSER_PASSWORD: "Epica23!",
+		EPICSTAFF_BASIC_LOGIN: "sergey.tokarev@hys-enterprise.com",
+		EPICSTAFF_BASIC_PASSWORD: "foxohPhap{ue2kah",
 		LLM_TYPE: "OPENAI",
 		OPENAI_API_KEY: "",
 		OPENAI_API_MODEL: "gpt-4o",
@@ -331,6 +333,104 @@ const AddImageToEnvForm: React.FC = () => {
 										>
 											<option value={pass1}>{pass1}</option>
 											<option value={pass2}>{pass2}</option>
+											<option value="CUSTOM">Other...</option>
+										</select>
+										{selectValue === "CUSTOM" && (
+											<input
+												type="text"
+												value={value}
+												onChange={(e) =>
+													setEnvObj({ ...envObj, [key]: e.target.value })
+												}
+												className="p-1 text-xs rounded border border-gray-300 font-mono bg-white mt-1"
+												style={{ minWidth: 0 }}
+												placeholder="Enter value"
+											/>
+										)}
+									</div>
+								);
+							}
+							if (key === "EPICSTAFF_BASIC_LOGIN") {
+								const defaultLogin = "sergey.tokarev@hys-enterprise.com";
+								const selectValue =
+									value === defaultLogin ? defaultLogin : "CUSTOM";
+								return (
+									<div key={key} className="flex flex-col mb-1">
+										<label
+											className="text-xs text-gray-500 font-mono truncate"
+											title={key}
+										>
+											{key}
+										</label>
+										<select
+											value={selectValue}
+											onChange={(e) => {
+												const v = e.target.value;
+												if (v === "CUSTOM") {
+													setEnvObj({
+														...envObj,
+														[key]:
+															envObj[key] === defaultLogin
+																? ""
+																: envObj[key],
+													});
+												} else {
+													setEnvObj({ ...envObj, [key]: v });
+												}
+											}}
+											className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
+											style={{ minWidth: 0 }}
+										>
+											<option value={defaultLogin}>{defaultLogin}</option>
+											<option value="CUSTOM">Other...</option>
+										</select>
+										{selectValue === "CUSTOM" && (
+											<input
+												type="text"
+												value={value}
+												onChange={(e) =>
+													setEnvObj({ ...envObj, [key]: e.target.value })
+												}
+												className="p-1 text-xs rounded border border-gray-300 font-mono bg-white mt-1"
+												style={{ minWidth: 0 }}
+												placeholder="Enter value"
+											/>
+										)}
+									</div>
+								);
+							}
+							if (key === "EPICSTAFF_BASIC_PASSWORD") {
+								const defaultPassword = "foxohPhap{ue2kah";
+								const selectValue =
+									value === defaultPassword ? defaultPassword : "CUSTOM";
+								return (
+									<div key={key} className="flex flex-col mb-1">
+										<label
+											className="text-xs text-gray-500 font-mono truncate"
+											title={key}
+										>
+											{key}
+										</label>
+										<select
+											value={selectValue}
+											onChange={(e) => {
+												const v = e.target.value;
+												if (v === "CUSTOM") {
+													setEnvObj({
+														...envObj,
+														[key]:
+															envObj[key] === defaultPassword
+																? ""
+																: envObj[key],
+													});
+												} else {
+													setEnvObj({ ...envObj, [key]: v });
+												}
+											}}
+											className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
+											style={{ minWidth: 0 }}
+										>
+											<option value={defaultPassword}>{defaultPassword}</option>
 											<option value="CUSTOM">Other...</option>
 										</select>
 										{selectValue === "CUSTOM" && (

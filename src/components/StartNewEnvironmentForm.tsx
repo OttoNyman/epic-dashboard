@@ -5,6 +5,8 @@ import { useImages } from "../contexts/ImagesContext";
 import { useStorages } from "../contexts/StoragesContext";
 import { useRefresh } from "../contexts/RefreshContext";
 
+// const EMPTY_STORAGE_VALUE = "__EMPTY_STORAGE__";
+
 const StartNewEnvironmentForm: React.FC = () => {
 	const images = useImages();
 	const storages = useStorages();
@@ -16,18 +18,25 @@ const StartNewEnvironmentForm: React.FC = () => {
 
 	const handleStartNew = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!startTag || !startPort || !startStorage) {
+		const storageNotSelected = startStorage === "";
+		if (!startTag || !startPort || storageNotSelected) {
 			alert("Please fill all fields to start an environment.");
 			return;
 		}
 		setLoading(true);
 		try {
+			// const storageParam =
+			// 	startStorage === EMPTY_STORAGE_VALUE ? "" : startStorage;
 			await startNewEnvironment(startTag, +startPort, startStorage);
 			alert("New environment started successfully!");
 			onRefresh();
 		} catch (error) {
 			console.error(error);
-			alert("Failed to start new environment.");
+			const message =
+				error instanceof Error && error.message
+					? error.message
+					: "Failed to start new environment.";
+			alert(message);
 		} finally {
 			setLoading(false);
 		}
@@ -42,10 +51,10 @@ const StartNewEnvironmentForm: React.FC = () => {
 	return (
 		<form
 			onSubmit={handleStartNew}
-			className="p-4 border rounded-lg space-y-4 flex flex-col h-full"
+			className="p-4 border rounded-lg space-y-4"
 		>
 			<h3 className="text-xl font-semibold">Start New Core Environment</h3>
-			<div className="space-y-4 flex-grow">
+			<div className="space-y-4">
 				<div>
 					<label htmlFor="start-tag" className="block text-sm font-medium">
 						Core
@@ -87,6 +96,7 @@ const StartNewEnvironmentForm: React.FC = () => {
 						className="w-full p-2 border rounded"
 					>
 						<option value="">Select storage...</option>
+						{/* <option value={EMPTY_STORAGE_VALUE}>Empty storage</option> */}
 						{storages.map((s) => (
 							<option key={s} value={s}>
 								{s}
@@ -97,8 +107,8 @@ const StartNewEnvironmentForm: React.FC = () => {
 			</div>
 			<button
 				type="submit"
-				disabled={loading || !startTag || !startPort || !startStorage}
-				className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400 self-start"
+				disabled={loading || !startTag || !startPort || startStorage === ""}
+				className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 disabled:bg-gray-400"
 			>
 				Start
 			</button>

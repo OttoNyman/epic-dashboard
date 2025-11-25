@@ -1,13 +1,56 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useRunningInstances } from "../contexts/RunningInstancesContext";
+import { useLoader } from "../contexts/LoaderContext";
+import { useRefresh } from "../contexts/RefreshContext";
+import { deleteInstance } from "@/services/api";
 
 const RunningInstancesList: React.FC = () => {
 	const runningInstances = useRunningInstances();
+	const { loading, setLoading } = useLoader();
+	const onRefresh = useRefresh();
+
+	const handleRemove = useCallback(
+		async (podId: string, podName: string) => {
+			const confirmed = window.confirm(
+				`Remove environment "${podName}" (${podId})?`
+			);
+			if (!confirmed) return;
+
+			setLoading(true);
+			try {
+				await deleteInstance(podId);
+				alert("Environment deleted.");
+				onRefresh();
+			} catch (error) {
+				console.error(error);
+				alert("Failed to delete environment.");
+			} finally {
+				setLoading(false);
+			}
+		},
+		[onRefresh, setLoading]
+	);
 
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
 			{runningInstances.map((pod) => (
-				<div key={pod.id} className="border border-gray-200 p-4 rounded-lg">
+				<div
+					key={pod.id}
+					className="relative group border border-gray-200 p-4 rounded-lg"
+				>
+					<button
+						type="button"
+						disabled={loading}
+						onClick={(e) => {
+							e.preventDefault();
+							e.stopPropagation();
+							handleRemove(pod.id, pod.pod_name);
+						}}
+						className="absolute top-2 right-2 hidden h-7 w-7 items-center justify-center rounded-full bg-white text-red-500 shadow hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 disabled:opacity-50 group-hover:flex cursor-pointer"
+						aria-label={`Remove environment ${pod.pod_name}`}
+					>
+						&times;
+					</button>
 					<div className="mb-2">
 						{pod.ports.map((p) => (
 							<a

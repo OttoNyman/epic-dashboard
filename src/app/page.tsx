@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useLoader } from "@/contexts/LoaderContext";
 import ImagesManager from "@/components/ImagesManager";
 import EnvironmentsManager from "@/components/EnvironmentsManager";
+import ThemeToggle from "@/components/ThemeToggle";
 import { DockerImage, RunningPod } from "@/types";
 import { ImagesProvider } from "@/contexts/ImagesContext";
 import { getStoragesAndImages, getRunningInstances } from "@/services/api";
@@ -67,15 +68,29 @@ export default function Home() {
 				<RunningInstancesProvider runningInstances={runningInstances}>
 					<RefreshProvider onRefresh={fetchData}>
 						<div className="space-y-8 min-h-screen flex flex-col">
-							<h1 className="text-4xl font-bold text-center">
-								Environments Dashboard
-							</h1>
+							<div className="flex justify-between items-start">
+								<div className="text-center flex-1">
+									<h1 className="text-4xl font-bold">
+										Environments Dashboard
+									</h1>
+									<p className="text-lg text-gray-600 mt-2">
+										http://epic-ai-tokarev.ddns.hysdev.com/
+									</p>
+								</div>
+								<div className="mt-2">
+									<ThemeToggle />
+								</div>
+							</div>
 
 							<EnvironmentsManager />
 							<ImagesManager />
 
-							<footer className="mt-auto py-4 text-xs text-gray-400 text-center border-t border-gray-100">
-								BE: S. Tokarev &nbsp;|&nbsp; UI: A. Krasnoiarskyi
+							<footer className="mt-auto py-4 text-xs text-gray-400 border-t border-gray-100">
+								<div className="grid items-center" style={{ gridTemplateColumns: '1fr 20px 1fr' }}>
+									<span className="text-right">BE: S. Tokarev</span>
+									<span className="text-center">|</span>
+									<span className="text-left">UI: A. Krasnoiarskyi</span>
+								</div>
 							</footer>
 						</div>
 					</RefreshProvider>

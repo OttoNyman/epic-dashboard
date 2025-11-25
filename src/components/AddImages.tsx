@@ -70,7 +70,7 @@ const AddImages: React.FC = () => {
 				/>
 				<button
 					type="submit"
-					className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
+					className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 disabled:bg-gray-400"
 					disabled={loading || !coreImageLink}
 				>
 					Add
@@ -101,7 +101,7 @@ const AddImages: React.FC = () => {
 				/>
 				<button
 					type="submit"
-					className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
+					className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 disabled:bg-gray-400"
 					disabled={loading || !gitlabImageLink}
 				>
 					Add

@@ -10,7 +10,7 @@ const DEFAULT_ENV_VARS = JSON.stringify(
 		SUPERUSER_LOGIN: "PO",
 		SUPERUSER_PASSWORD: "Epica23!",
 		EPICSTAFF_BASIC_LOGIN: "sergey.tokarev@hys-enterprise.com",
-		EPICSTAFF_BASIC_PASSWORD: "foxohPhap{ue2kah",
+		EPICSTAFF_BASIC_PASSWORD: "",
 		LLM_TYPE: "OPENAI",
 		OPENAI_API_KEY: "",
 		OPENAI_API_MODEL: "gpt-4o",
@@ -101,85 +101,87 @@ const AddImageToEnvForm: React.FC = () => {
 
 	return (
 		<form onSubmit={handleAddImage} className="p-4 border rounded-lg space-y-4">
-			<h3 className="text-xl font-semibold">Add Image to Env</h3>
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-				<div className="space-y-4">
-					<div>
-						<label htmlFor="add-pod" className="block text-sm font-medium">
-							Env
-						</label>
-						<select
-							id="add-pod"
-							value={addPodId}
-							onChange={(e) => setAddPodId(e.target.value)}
-							className="w-full p-2 border rounded"
-						>
-							<option value="">Select an env...</option>
-							{runningInstances.map((p) => (
-								<option key={p.id} value={p.id}>
-									{p.pod_name}
-								</option>
-							))}
-						</select>
-					</div>
-					<div>
-						<label htmlFor="add-image" className="block text-sm font-medium">
-							Image
-						</label>
-						<select
-							id="add-image"
-							value={addImageId}
-							onChange={(e) => setAddImageId(e.target.value)}
-							className="w-full p-2 border rounded"
-						>
-							<option value="">Select an image...</option>
-							{assistanceImages.map((img) => (
-								<option key={img.id} value={img.id}>
-									{img.repository}:{img.tag}
-								</option>
-							))}
-						</select>
-					</div>
-					<div>
-						<label htmlFor="add-type" className="block text-sm font-medium">
-							Type
-						</label>
-						<select
-							id="add-type"
-							value={addImageType}
-							onChange={(e) =>
-								setAddImageType(
-									e.target.value as "client" | "server" | "feedback"
-								)
-							}
-							className="w-full p-2 border rounded"
-						>
-							<option value="client">client</option>
-							<option value="server">server</option>
-							<option value="feedback">feedback</option>
-						</select>
-					</div>
+			<h3 className="text-xl font-semibold">Add Image to Environment</h3>
+			<div className="space-y-4">
+				<div>
+					<label htmlFor="add-pod" className="block text-sm font-medium">
+						Env
+					</label>
+					<select
+						id="add-pod"
+						value={addPodId}
+						onChange={(e) => setAddPodId(e.target.value)}
+						className="w-full p-2 border rounded"
+					>
+						<option value="">Select an env...</option>
+						{runningInstances.map((p) => (
+							<option key={p.id} value={p.id}>
+								{p.pod_name}
+							</option>
+						))}
+					</select>
 				</div>
-				<div className="bg-gray-50 p-4 rounded border border-gray-200">
+				<div>
+					<label htmlFor="add-image" className="block text-sm font-medium">
+						Image
+					</label>
+					<select
+						id="add-image"
+						value={addImageId}
+						onChange={(e) => setAddImageId(e.target.value)}
+						className="w-full p-2 border rounded"
+					>
+						<option value="">Select an image...</option>
+						{assistanceImages.map((img) => (
+							<option key={img.id} value={img.id}>
+								{img.repository}:{img.tag}
+							</option>
+						))}
+					</select>
+				</div>
+				<div>
+					<label htmlFor="add-type" className="block text-sm font-medium">
+						Type
+					</label>
+					<select
+						id="add-type"
+						value={addImageType}
+						onChange={(e) =>
+							setAddImageType(
+								e.target.value as "client" | "server" | "feedback"
+							)
+						}
+						className="w-full p-2 border rounded"
+					>
+						<option value="client">client</option>
+						<option value="server">server</option>
+						<option value="feedback">feedback</option>
+					</select>
+				</div>
+				<div className="env-vars-section p-4 rounded border">
 					<div className="text-sm font-medium mb-2">Environment Variables</div>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+					<div className="space-y-2">
+						<div className="grid grid-cols-2 gap-2 text-xs font-semibold text-gray-600 pb-1 border-b">
+							<div>Key</div>
+							<div>Value</div>
+						</div>
+						<div className="space-y-2">
 						{Object.entries(envObj).map(([key, value]) => {
 							if (key === "IS_SUPERUSER_AUTH_BY_PASS") {
 								return (
-									<div key={key} className="flex flex-col mb-1">
-										<label
-											className="text-xs text-gray-500 font-mono truncate"
+									<div key={key} className="grid grid-cols-2 gap-2 items-center">
+										<div
+											className="text-xs text-gray-700 font-mono truncate"
 											title={key}
 										>
 											{key}
-										</label>
+										</div>
 										<select
 											value={value}
 											onChange={(e) =>
 												setEnvObj({ ...envObj, [key]: e.target.value })
 											}
-											className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
-											style={{ minWidth: 0 }}
+											className="p-1 text-xs rounded border border-gray-300 font-mono bg-white w-full"
 										>
 											<option value="False">False</option>
 											<option value="True">True</option>
@@ -195,48 +197,49 @@ const AddImageToEnvForm: React.FC = () => {
 									selectValue = "CUSTOM";
 								}
 								return (
-									<div key={key} className="flex flex-col mb-1">
-										<label
-											className="text-xs text-gray-500 font-mono truncate"
+									<div key={key} className="grid grid-cols-2 gap-2 items-start">
+										<div
+											className="text-xs text-gray-700 font-mono truncate"
 											title={key}
 										>
 											{key}
-										</label>
-										<select
-											value={selectValue}
-											onChange={(e) => {
-												const v = e.target.value;
-												if (v === "CUSTOM") {
-													setEnvObj({
-														...envObj,
-														[key]:
-															envObj[key] === "ERROR" || envObj[key] === "DEBUG"
-																? ""
-																: envObj[key],
-													});
-												} else {
-													setEnvObj({ ...envObj, [key]: v });
-												}
-											}}
-											className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
-											style={{ minWidth: 0 }}
-										>
-											<option value="DEBUG">DEBUG</option>
-											<option value="ERROR">ERROR</option>
-											<option value="CUSTOM">Other...</option>
-										</select>
-										{selectValue === "CUSTOM" && (
-											<input
-												type="text"
-												value={value}
-												onChange={(e) =>
-													setEnvObj({ ...envObj, [key]: e.target.value })
-												}
-												className="p-1 text-xs rounded border border-gray-300 font-mono bg-white mt-1"
-												style={{ minWidth: 0 }}
-												placeholder="Enter value"
-											/>
-										)}
+										</div>
+										<div className="space-y-1">
+											<select
+												value={selectValue}
+												onChange={(e) => {
+													const v = e.target.value;
+													if (v === "CUSTOM") {
+														setEnvObj({
+															...envObj,
+															[key]:
+																envObj[key] === "ERROR" || envObj[key] === "DEBUG"
+																	? ""
+																	: envObj[key],
+														});
+													} else {
+														setEnvObj({ ...envObj, [key]: v });
+													}
+												}}
+												className="p-1 text-xs rounded border border-gray-300 font-mono bg-white w-full"
+											>
+												<option value="DEBUG">DEBUG</option>
+												<option value="ERROR">ERROR</option>
+												<option value="CUSTOM">Other...</option>
+											</select>
+											{selectValue === "CUSTOM" && (
+												<input
+													type="text"
+													value={value}
+													onChange={(e) =>
+														setEnvObj({ ...envObj, [key]: e.target.value })
+													}
+													className="p-1 text-xs rounded border border-gray-300 font-mono bg-white w-full truncate"
+													placeholder="Enter value"
+													title={value}
+												/>
+											)}
+										</div>
 									</div>
 								);
 							}
@@ -248,48 +251,49 @@ const AddImageToEnvForm: React.FC = () => {
 									selectValue = "CUSTOM";
 								}
 								return (
-									<div key={key} className="flex flex-col mb-1">
-										<label
-											className="text-xs text-gray-500 font-mono truncate"
+									<div key={key} className="grid grid-cols-2 gap-2 items-start">
+										<div
+											className="text-xs text-gray-700 font-mono truncate"
 											title={key}
 										>
 											{key}
-										</label>
-										<select
-											value={selectValue}
-											onChange={(e) => {
-												const v = e.target.value;
-												if (v === "CUSTOM") {
-													setEnvObj({
-														...envObj,
-														[key]:
-															envObj[key] === "PO" || envObj[key] === "Admin"
-																? ""
-																: envObj[key],
-													});
-												} else {
-													setEnvObj({ ...envObj, [key]: v });
-												}
-											}}
-											className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
-											style={{ minWidth: 0 }}
-										>
-											<option value="PO">PO</option>
-											<option value="Admin">Admin</option>
-											<option value="CUSTOM">Other...</option>
-										</select>
-										{selectValue === "CUSTOM" && (
-											<input
-												type="text"
-												value={value}
-												onChange={(e) =>
-													setEnvObj({ ...envObj, [key]: e.target.value })
-												}
-												className="p-1 text-xs rounded border border-gray-300 font-mono bg-white mt-1"
-												style={{ minWidth: 0 }}
-												placeholder="Enter value"
-											/>
-										)}
+										</div>
+										<div className="space-y-1">
+											<select
+												value={selectValue}
+												onChange={(e) => {
+													const v = e.target.value;
+													if (v === "CUSTOM") {
+														setEnvObj({
+															...envObj,
+															[key]:
+																envObj[key] === "PO" || envObj[key] === "Admin"
+																	? ""
+																	: envObj[key],
+														});
+													} else {
+														setEnvObj({ ...envObj, [key]: v });
+													}
+												}}
+												className="p-1 text-xs rounded border border-gray-300 font-mono bg-white w-full"
+											>
+												<option value="PO">PO</option>
+												<option value="Admin">Admin</option>
+												<option value="CUSTOM">Other...</option>
+											</select>
+											{selectValue === "CUSTOM" && (
+												<input
+													type="text"
+													value={value}
+													onChange={(e) =>
+														setEnvObj({ ...envObj, [key]: e.target.value })
+													}
+													className="p-1 text-xs rounded border border-gray-300 font-mono bg-white w-full truncate"
+													placeholder="Enter value"
+													title={value}
+												/>
+											)}
+										</div>
 									</div>
 								);
 							}
@@ -303,215 +307,142 @@ const AddImageToEnvForm: React.FC = () => {
 									selectValue = "CUSTOM";
 								}
 								return (
-									<div key={key} className="flex flex-col mb-1">
-										<label
-											className="text-xs text-gray-500 font-mono truncate"
+									<div key={key} className="grid grid-cols-2 gap-2 items-start">
+										<div
+											className="text-xs text-gray-700 font-mono truncate"
 											title={key}
 										>
 											{key}
-										</label>
-										<select
-											value={selectValue}
-											onChange={(e) => {
-												const v = e.target.value;
-												if (v === "CUSTOM") {
-													setEnvObj({
-														...envObj,
-														[key]:
-															envObj[key] === pass1 || envObj[key] === pass2
-																? ""
-																: envObj[key],
-													});
-													// } else if (v === pass2Esc) {
-													// 	setEnvObj({ ...envObj, [key]: pass2 });
-												} else {
-													setEnvObj({ ...envObj, [key]: v });
-												}
-											}}
-											className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
-											style={{ minWidth: 0 }}
-										>
-											<option value={pass1}>{pass1}</option>
-											<option value={pass2}>{pass2}</option>
-											<option value="CUSTOM">Other...</option>
-										</select>
-										{selectValue === "CUSTOM" && (
-											<input
-												type="text"
-												value={value}
-												onChange={(e) =>
-													setEnvObj({ ...envObj, [key]: e.target.value })
-												}
-												className="p-1 text-xs rounded border border-gray-300 font-mono bg-white mt-1"
-												style={{ minWidth: 0 }}
-												placeholder="Enter value"
-											/>
-										)}
+										</div>
+										<div className="space-y-1">
+											<select
+												value={selectValue}
+												onChange={(e) => {
+													const v = e.target.value;
+													if (v === "CUSTOM") {
+														setEnvObj({
+															...envObj,
+															[key]:
+																envObj[key] === pass1 || envObj[key] === pass2
+																	? ""
+																	: envObj[key],
+														});
+													} else {
+														setEnvObj({ ...envObj, [key]: v });
+													}
+												}}
+												className="p-1 text-xs rounded border border-gray-300 font-mono bg-white w-full"
+											>
+												<option value={pass1}>{pass1}</option>
+												<option value={pass2} title={pass2}>
+													{pass2}
+												</option>
+												<option value="CUSTOM">Other...</option>
+											</select>
+											{selectValue === "CUSTOM" && (
+												<input
+													type="text"
+													value={value}
+													onChange={(e) =>
+														setEnvObj({ ...envObj, [key]: e.target.value })
+													}
+													className="p-1 text-xs rounded border border-gray-300 font-mono bg-white w-full truncate"
+													placeholder="Enter value"
+													title={value}
+												/>
+											)}
+										</div>
 									</div>
 								);
 							}
 							if (key === "EPICSTAFF_BASIC_LOGIN") {
-								const defaultLogin = "sergey.tokarev@hys-enterprise.com";
-								const selectValue =
-									value === defaultLogin ? defaultLogin : "CUSTOM";
 								return (
-									<div key={key} className="flex flex-col mb-1">
-										<label
-											className="text-xs text-gray-500 font-mono truncate"
+									<div key={key} className="grid grid-cols-2 gap-2 items-center">
+										<div
+											className="text-xs text-gray-700 font-mono truncate"
 											title={key}
 										>
 											{key}
-										</label>
-										<select
-											value={selectValue}
-											onChange={(e) => {
-												const v = e.target.value;
-												if (v === "CUSTOM") {
-													setEnvObj({
-														...envObj,
-														[key]:
-															envObj[key] === defaultLogin
-																? ""
-																: envObj[key],
-													});
-												} else {
-													setEnvObj({ ...envObj, [key]: v });
-												}
-											}}
-											className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
-											style={{ minWidth: 0 }}
-										>
-											<option value={defaultLogin}>{defaultLogin}</option>
-											<option value="CUSTOM">Other...</option>
-										</select>
-										{selectValue === "CUSTOM" && (
-											<input
-												type="text"
-												value={value}
-												onChange={(e) =>
-													setEnvObj({ ...envObj, [key]: e.target.value })
-												}
-												className="p-1 text-xs rounded border border-gray-300 font-mono bg-white mt-1"
-												style={{ minWidth: 0 }}
-												placeholder="Enter value"
-											/>
-										)}
-									</div>
-								);
-							}
-							if (key === "EPICSTAFF_BASIC_PASSWORD") {
-								const defaultPassword = "foxohPhap{ue2kah";
-								const selectValue =
-									value === defaultPassword ? defaultPassword : "CUSTOM";
-								return (
-									<div key={key} className="flex flex-col mb-1">
-										<label
-											className="text-xs text-gray-500 font-mono truncate"
-											title={key}
-										>
-											{key}
-										</label>
-										<select
-											value={selectValue}
-											onChange={(e) => {
-												const v = e.target.value;
-												if (v === "CUSTOM") {
-													setEnvObj({
-														...envObj,
-														[key]:
-															envObj[key] === defaultPassword
-																? ""
-																: envObj[key],
-													});
-												} else {
-													setEnvObj({ ...envObj, [key]: v });
-												}
-											}}
-											className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
-											style={{ minWidth: 0 }}
-										>
-											<option value={defaultPassword}>{defaultPassword}</option>
-											<option value="CUSTOM">Other...</option>
-										</select>
-										{selectValue === "CUSTOM" && (
-											<input
-												type="text"
-												value={value}
-												onChange={(e) =>
-													setEnvObj({ ...envObj, [key]: e.target.value })
-												}
-												className="p-1 text-xs rounded border border-gray-300 font-mono bg-white mt-1"
-												style={{ minWidth: 0 }}
-												placeholder="Enter value"
-											/>
-										)}
+										</div>
+										<input
+											type="text"
+											value={value}
+											onChange={(e) =>
+												setEnvObj({ ...envObj, [key]: e.target.value })
+											}
+											className="p-1 text-xs rounded border border-gray-300 font-mono bg-white w-full"
+											placeholder="Enter login"
+											title={value}
+										/>
 									</div>
 								);
 							}
 							return (
-								<div key={key} className="flex flex-col mb-1">
-									<label
-										className="text-xs text-gray-500 font-mono truncate"
+								<div key={key} className="grid grid-cols-2 gap-2 items-center">
+									<div
+										className="text-xs text-gray-700 font-mono truncate"
 										title={key}
 									>
 										{key}
-									</label>
+									</div>
 									<input
 										type="text"
 										value={value}
 										onChange={(e) =>
 											setEnvObj({ ...envObj, [key]: e.target.value })
 										}
-										className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
-										style={{ minWidth: 0 }}
+										className="p-1 text-xs rounded border border-gray-300 font-mono bg-white w-full truncate"
+										title={value}
 									/>
 								</div>
 							);
 						})}
 						{/* Custom variables */}
 						{customVars.map((v, idx) => (
-							<div key={idx} className="flex flex-col mb-1">
-								<div className="flex gap-2 items-center">
-									<input
-										type="text"
-										value={v.key}
-										onChange={(e) =>
-											handleCustomVarChange(idx, "key", e.target.value)
-										}
-										className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
-										placeholder="Custom key"
-										style={{ minWidth: 0 }}
-									/>
+							<div key={idx} className="grid grid-cols-2 gap-2 items-center">
+								<input
+									type="text"
+									value={v.key}
+									onChange={(e) =>
+										handleCustomVarChange(idx, "key", e.target.value)
+									}
+									className="p-1 text-xs rounded border border-gray-300 font-mono bg-white w-full truncate"
+									placeholder="Custom key"
+									title={v.key}
+								/>
+								<div className="flex gap-1 items-center">
 									<input
 										type="text"
 										value={v.value}
 										onChange={(e) =>
 											handleCustomVarChange(idx, "value", e.target.value)
 										}
-										className="p-1 text-xs rounded border border-gray-300 font-mono bg-white"
+										className="p-1 text-xs rounded border border-gray-300 font-mono bg-white flex-1 truncate"
 										placeholder="Custom value"
-										style={{ minWidth: 0 }}
+										title={v.value}
 									/>
 									<button
 										type="button"
 										onClick={() => handleRemoveCustomVar(idx)}
-										className="text-red-500 px-2"
-										title="Удалить"
+										className="text-red-500 px-2 text-sm hover:bg-red-100 rounded cursor-pointer"
+										title="Remove"
 									>
-										–
+										×
 									</button>
 								</div>
 							</div>
 						))}
-						<div>
+						<div className="grid grid-cols-2 gap-2">
 							<button
 								type="button"
 								onClick={handleAddCustomVar}
-								className="text-green-600 text-lg px-2 py-1 rounded hover:bg-green-100"
-								title="Добавить переменную"
+								className="text-sky-500 text-xs px-2 py-1 rounded hover:bg-sky-100 justify-self-start font-mono cursor-pointer"
+								title="Add variable"
 							>
-								+
+								+ Add variable
 							</button>
+							<div></div>
+						</div>
 						</div>
 					</div>
 				</div>
@@ -519,7 +450,7 @@ const AddImageToEnvForm: React.FC = () => {
 			<button
 				type="submit"
 				disabled={loading || !addPodId || !addImageId || !addImageType}
-				className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
+				className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 disabled:bg-gray-400"
 			>
 				Add Image
 			</button>

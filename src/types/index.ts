@@ -50,6 +50,11 @@ export interface StartNewResponse {
 	}[];
 }
 
+export interface ApiErrorResponse {
+	error: string;
+	[key: string]: unknown;
+}
+
 export interface AddImageToPodResponse {
 	// Define structure based on actual API response if available
 	[key: string]: unknown;

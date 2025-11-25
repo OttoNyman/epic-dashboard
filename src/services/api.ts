@@ -3,9 +3,19 @@ import {
 	RunningInstancesResponse,
 	StartNewResponse,
 	AddImageToPodResponse,
+	ApiErrorResponse,
 } from "@/types";
 
 const API_BASE_URL = "htt"+"p://epic-ai-tokarev.ddns.hysdev.com:8000";
+
+const isApiErrorResponse = (value: unknown): value is ApiErrorResponse => {
+	return (
+		typeof value === "object" &&
+		value !== null &&
+		"error" in value &&
+		typeof (value as Record<string, unknown>).error === "string"
+	);
+};
 
 export const getStoragesAndImages = async (): Promise<ImagesAndStorages> => {
 	const response = await fetch(`${API_BASE_URL}/get_list_storages_and_images`);
@@ -45,11 +55,20 @@ export const startNewEnvironment = async (
 	port: number,
 	storage: string
 ): Promise<StartNewResponse> => {
-	const response = await fetch(
-		`${API_BASE_URL}/start_new?tag=${tag}&port=${port}&storage=${storage}`
-	);
+	const params = new URLSearchParams({
+		tag,
+		port: String(port),
+		storage,
+	});
+	const response = await fetch(`${API_BASE_URL}/start_new?${params.toString()}`);
 	if (!response.ok) throw new Error("Failed to start new environment.");
-	return response.json();
+
+	const data = await response.json();
+	if (isApiErrorResponse(data)) {
+		throw new Error(data.error || "Failed to start new environment.");
+	}
+
+	return data as StartNewResponse;
 };
 
 export const addImageToPod = async (

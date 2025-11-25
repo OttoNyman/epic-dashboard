@@ -2,7 +2,6 @@
 
 import RunningInstancesList from "./RunningInstancesList";
 import StartNewEnvironmentForm from "./StartNewEnvironmentForm";
-import DeleteInstanceForm from "./DeleteInstanceForm";
 import AddImageToEnvForm from "./AddImageToEnvForm";
 import { useRefresh } from "../contexts/RefreshContext";
 
@@ -25,9 +24,8 @@ const EnvironmentsManager: React.FC = () => {
 
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
 				<StartNewEnvironmentForm />
-				<DeleteInstanceForm />
+				<AddImageToEnvForm />
 			</div>
-			<AddImageToEnvForm />
 		</div>
 	);
 };

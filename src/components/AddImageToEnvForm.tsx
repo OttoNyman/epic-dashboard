@@ -90,6 +90,12 @@ const AddImageToEnvForm: React.FC = () => {
 		try {
 			await addImageToPod(addPodId, addImageId, addImageType, mergedEnvObj);
 			alert("Image added to env successfully!");
+			// Reset form to default values
+			setAddPodId("");
+			setAddImageId("");
+			setAddImageType("client");
+			setEnvObj(defaultEnvObj);
+			setCustomVars([]);
 			onRefresh();
 		} catch (error) {
 			console.error(error);

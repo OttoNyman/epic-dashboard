@@ -29,6 +29,10 @@ const StartNewEnvironmentForm: React.FC = () => {
 			// 	startStorage === EMPTY_STORAGE_VALUE ? "" : startStorage;
 			await startNewEnvironment(startTag, +startPort, startStorage);
 			alert("New environment started successfully!");
+			// Reset form to default values
+			setStartTag("");
+			setStartPort("8888");
+			setStartStorage("");
 			onRefresh();
 		} catch (error) {
 			console.error(error);

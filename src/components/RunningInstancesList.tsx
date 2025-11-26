@@ -19,11 +19,11 @@ const RunningInstancesList: React.FC = () => {
 			setLoading(true);
 			try {
 				await deleteInstance(podId);
-				alert("Environment deleted.");
+				alert("Environment removed.");
 				onRefresh();
 			} catch (error) {
 				console.error(error);
-				alert("Failed to delete environment.");
+				alert("Failed to remove environment.");
 			} finally {
 				setLoading(false);
 			}

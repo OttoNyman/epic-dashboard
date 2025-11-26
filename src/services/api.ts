@@ -6,7 +6,7 @@ import {
 	ApiErrorResponse,
 } from "@/types";
 
-const API_BASE_URL = "htt"+"p://epic-ai-tokarev.ddns.hysdev.com:8000";
+const API_BASE_URL = "/api/proxy";
 
 const isApiErrorResponse = (value: unknown): value is ApiErrorResponse => {
 	return (

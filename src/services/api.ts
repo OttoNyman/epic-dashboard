@@ -93,3 +93,13 @@ export const deleteInstance = async (podId: string): Promise<unknown> => {
 	if (!response.ok) throw new Error("Failed to delete instance.");
 	return response.json();
 };
+
+export const deleteImage = async (imageId: string): Promise<unknown> => {
+	const response = await fetch(`${API_BASE_URL}/delete_image`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ image_id: imageId }),
+	});
+	if (!response.ok) throw new Error("Failed to delete image.");
+	return response.json();
+};

@@ -2,9 +2,6 @@ import { NextRequest } from 'next/server';
 
 const API_BASE_URL = "http://epic-ai-tokarev.ddns.hysdev.com:8000";
 
-// Force dynamic rendering for this API route
-export const dynamic = 'force-dynamic';
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }

@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  // Removed output: 'export' to enable API routes
+  output: 'export',
 };
 
 export default nextConfig;
